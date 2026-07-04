@@ -229,8 +229,8 @@ function initThree() {
   scene.background = new THREE.Color(0x111111);
   scene.fog = new THREE.Fog(0x111111, 18, 30);
 
-  camera   = new THREE.PerspectiveCamera(36, W / H, 0.1, 60);
-  camera.position.set(0, 6, 2.5);
+  camera   = new THREE.PerspectiveCamera(40, W / H, 0.1, 60);
+  camera.position.set(0, 8, 3);
   camera.lookAt(0, 0, 0);
 
   const canvas = document.getElementById('dice-canvas');
@@ -248,9 +248,9 @@ function initThree() {
   sun.position.set(4, 12, 6);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.camera.near = 1; sun.shadow.camera.far = 22;
-  sun.shadow.camera.left = -5; sun.shadow.camera.right = 5;
-  sun.shadow.camera.top =  4; sun.shadow.camera.bottom = -4;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 26;
+  sun.shadow.camera.left = -6; sun.shadow.camera.right = 6;
+  sun.shadow.camera.top =  5; sun.shadow.camera.bottom = -5;
   sun.shadow.bias = -0.001;
   scene.add(sun);
 
@@ -392,12 +392,12 @@ function launchDie(ds, x, z, onDone) {
 
 // Random position within the table bounds for each side
 function randPos(side) {
-  // Constrained to the zoomed visible area (~6 world units wide)
-  const xMax = 2.2;
-  const zMax = 1.3;
+  // Constrained well inside the visible area so dice never clip the edge
+  const xMax = 1.9;
+  const zMax = 1.1;
   const x = side === 'L'
-    ? -(0.55 + Math.random() * (xMax - 0.55))
-    :  (0.55 + Math.random() * (xMax - 0.55));
+    ? -(0.5 + Math.random() * (xMax - 0.5))
+    :  (0.5 + Math.random() * (xMax - 0.5));
   const z = (Math.random() * 2 - 1) * zMax;
   return [x, z];
 }
