@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miranda Games — Dice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px;
+    }
+
+    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; letter-spacing: .5px; }
+    .subtitle { font-size: .85rem; color: #888; margin-bottom: 32px; }
+
+    /* ── Name prompt ─────────────────────────────────────────────────────── */
+    #name-screen {
+      background: #16213e;
+      border-radius: 16px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+    }
+    #name-screen h2 { margin-bottom: 16px; font-size: 1.1rem; }
+    #name-input {
+      width: 100%; padding: 12px 16px; border-radius: 10px;
+      border: 2px solid #333; background: #0f3460; color: white;
+      font-size: 1rem; margin-bottom: 14px; outline: none; text-align: center;
+    }
+    #name-input:focus { border-color: #e94560; }
+    #name-btn {
+      width: 100%; padding: 12px; border-radius: 10px; border: none;
+      background: #e94560; color: white; font-size: 1rem; font-weight: 600;
+      cursor: pointer;
+    }
+    #name-btn:hover { background: #c73652; }
+
+    /* ── Game screen ─────────────────────────────────────────────────────── */
+    #game-screen { display: none; width: 100%; max-width: 420px; }
+
+    .player-tag {
+      text-align: center; margin-bottom: 24px;
+      font-size: .9rem; color: #aaa;
+    }
+    .player-tag strong { color: #e94560; }
+
+    /* ── Dice ────────────────────────────────────────────────────────────── */
+    .dice-row {
+      display: flex; justify-content: center; gap: 24px; margin-bottom: 28px;
+    }
+
+    .die {
+      width: 100px; height: 100px;
+      background: white; border-radius: 16px;
+      display: grid; grid-template-areas:
+        "a . b"
+        "c e d"
+        "f . g";
+      padding: 14px; gap: 6px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.5);
+      transition: transform .1s;
+    }
+
+    .die.rolling {
+      animation: shake .5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: rotate(0deg) scale(1); }
+      15%      { transform: rotate(-12deg) scale(1.1); }
+      30%      { transform: rotate(10deg) scale(1.05); }
+      45%      { transform: rotate(-8deg) scale(1.1); }
+      60%      { transform: rotate(6deg) scale(1.05); }
+      75%      { transform: rotate(-4deg) scale(1.02); }
+      90%      { transform: rotate(2deg) scale(1); }
+    }
+
+    .pip {
+      width: 100%; aspect-ratio: 1;
+      background: #1a1a2e; border-radius: 50%;
+      visibility: hidden;
+    }
+    .pip.a { grid-area: a; }
+    .pip.b { grid-area: b; }
+    .pip.c { grid-area: c; }
+    .pip.d { grid-area: d; }
+    .pip.e { grid-area: e; }
+    .pip.f { grid-area: f; }
+    .pip.g { grid-area: g; }
+
+    /* which pips are visible per face value */
+    [data-val="1"] .pip.e { visibility: visible; }
+    [data-val="2"] .pip.a, [data-val="2"] .pip.g { visibility: visible; }
+    [data-val="3"] .pip.a, [data-val="3"] .pip.e, [data-val="3"] .pip.g { visibility: visible; }
+    [data-val="4"] .pip.a, [data-val="4"] .pip.b, [data-val="4"] .pip.f, [data-val="4"] .pip.g { visibility: visible; }
+    [data-val="5"] .pip.a, [data-val="5"] .pip.b, [data-val="5"] .pip.e, [data-val="5"] .pip.f, [data-val="5"] .pip.g { visibility: visible; }
+    [data-val="6"] .pip.a, [data-val="6"] .pip.b, [data-val="6"] .pip.c, [data-val="6"] .pip.d, [data-val="6"] .pip.f, [data-val="6"] .pip.g { visibility: visible; }
+
+    /* ── Roll info ───────────────────────────────────────────────────────── */
+    .roll-info {
+      text-align: center; margin-bottom: 28px; min-height: 48px;
+    }
+    .roll-info .roller { font-size: .85rem; color: #aaa; margin-bottom: 4px; }
+    .roll-info .total  { font-size: 2rem; font-weight: 800; color: #e94560; }
+
+    /* ── Roll button ─────────────────────────────────────────────────────── */
+    #roll-btn {
+      display: block; width: 100%; padding: 16px;
+      border-radius: 14px; border: none;
+      background: #e94560; color: white;
+      font-size: 1.2rem; font-weight: 700;
+      cursor: pointer; margin-bottom: 32px;
+      box-shadow: 0 4px 16px rgba(233,69,96,.4);
+      transition: background .15s, transform .1s;
+    }
+    #roll-btn:hover   { background: #c73652; }
+    #roll-btn:active  { transform: scale(.97); }
+    #roll-btn:disabled { background: #555; cursor: not-allowed; box-shadow: none; }
+
+    /* ── History ─────────────────────────────────────────────────────────── */
+    .history-title {
+      font-size: .8rem; font-weight: 600; color: #666;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-item {
+      background: #16213e; border-radius: 10px;
+      padding: 10px 14px; display: flex;
+      justify-content: space-between; align-items: center;
+      font-size: .88rem;
+    }
+    .history-item .who  { color: #e94560; font-weight: 600; }
+    .history-item .dice { color: #aaa; font-size: .8rem; }
+    .history-item .tot  { font-weight: 700; font-size: 1rem; }
+    .history-item.mine  { border-left: 3px solid #e94560; }
+  </style>
+</head>
+<body>
+
+<h1>🎲 Miranda Games</h1>
+<p class="subtitle">Dice Roller</p>
+
+<!-- Name prompt -->
+<div id="name-screen">
+  <h2>What's your name?</h2>
+  <input type="text" id="name-input" placeholder="Enter your name" maxlength="20" />
+  <button id="name-btn" onclick="saveName()">Let's Play</button>
+</div>
+
+<!-- Game -->
+<div id="game-screen">
+  <div class="player-tag">Playing as <strong id="player-display"></strong></div>
+
+  <div class="dice-row">
+    <div class="die" id="die1" data-val="1">
+      <div class="pip a"></div><div class="pip b"></div>
+      <div class="pip c"></div><div class="pip e"></div>
+      <div class="pip d"></div><div class="pip f"></div>
+      <div class="pip g"></div>
+    </div>
+    <div class="die" id="die2" data-val="1">
+      <div class="pip a"></div><div class="pip b"></div>
+      <div class="pip c"></div><div class="pip e"></div>
+      <div class="pip d"></div><div class="pip f"></div>
+      <div class="pip g"></div>
+    </div>
+  </div>
+
+  <div class="roll-info">
+    <div class="roller" id="roller-name"></div>
+    <div class="total"  id="roll-total"></div>
+  </div>
+
+  <button id="roll-btn" onclick="rollDice()">🎲 Roll</button>
+
+  <div class="history-title">Roll History</div>
+  <div class="history-list" id="history-list"></div>
+</div>
+
+<script>
+  let playerName = '';
+  let lastRollId = 0;
+  let pollTimer  = null;
+
+  function saveName() {
+    const val = document.getElementById('name-input').value.trim();
+    if (!val) { document.getElementById('name-input').focus(); return; }
+    playerName = val;
+    localStorage.setItem('dice_player_name', val);
+    document.getElementById('name-screen').style.display  = 'none';
+    document.getElementById('game-screen').style.display  = 'block';
+    document.getElementById('player-display').textContent = val;
+    fetchLatest();
+    startPolling();
+  }
+
+  function setDie(id, val) {
+    document.getElementById(id).dataset.val = val;
+  }
+
+  function animateDice() {
+    ['die1','die2'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('rolling');
+      void el.offsetWidth;
+      el.classList.add('rolling');
+    });
+  }
+
+  async function rollDice() {
+    const btn = document.getElementById('roll-btn');
+    btn.disabled = true;
+    animateDice();
+
+    const res  = await fetch('/api/dice/roll', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({player_name: playerName})
+    });
+    const data = await res.json();
+
+    setTimeout(() => {
+      applyRoll(data);
+      btn.disabled = false;
+    }, 520);
+  }
+
+  function applyRoll(data) {
+    setDie('die1', data.die1);
+    setDie('die2', data.die2);
+    document.getElementById('roller-name').textContent = data.player_name + ' rolled';
+    document.getElementById('roll-total').textContent  = data.total;
+    lastRollId = data.id || lastRollId;
+  }
+
+  function renderHistory(history) {
+    const list = document.getElementById('history-list');
+    list.innerHTML = history.map(r => {
+      const mine = r.player_name === playerName ? 'mine' : '';
+      const time = new Date(r.rolled_at + 'Z').toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+      return `<div class="history-item ${mine}">
+        <span class="who">${esc(r.player_name)}</span>
+        <span class="dice">${r.die1} + ${r.die2} · ${time}</span>
+        <span class="tot">${r.die1 + r.die2}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function fetchLatest() {
+    const res  = await fetch(`/api/dice/latest?since_id=${lastRollId}`);
+    const data = await res.json();
+
+    if (data.new_roll && data.latest) {
+      animateDice();
+      setTimeout(() => applyRoll(data.latest), 520);
+      lastRollId = data.latest.id;
+    } else if (data.latest && lastRollId === 0) {
+      applyRoll(data.latest);
+      lastRollId = data.latest.id;
+    }
+
+    if (data.history) renderHistory(data.history);
+  }
+
+  function startPolling() {
+    clearInterval(pollTimer);
+    pollTimer = setInterval(fetchLatest, 2000);
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Restore name from localStorage
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('dice_player_name');
+    if (saved) {
+      document.getElementById('name-input').value = saved;
+    }
+    document.getElementById('name-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveName();
+    });
+  });
+</script>
+</body>
+</html>
