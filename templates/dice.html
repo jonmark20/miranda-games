@@ -92,8 +92,8 @@
     .die-scene {
       position: absolute;
       width: 80px; height: 80px;
-      perspective: 380px;
-      perspective-origin: 50% 30%;
+      perspective: 560px;
+      perspective-origin: 50% 50%;
       z-index: 4;
     }
 
@@ -111,6 +111,8 @@
       display: grid;
       grid-template-areas: "a . b" "c e d" "f . g";
       padding: 13px; gap: 7px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       /* Simulated edge depth */
       box-shadow: inset -2px -2px 5px rgba(0,0,0,.12), inset 2px 2px 5px rgba(255,255,255,.55);
     }
@@ -283,12 +285,14 @@
     6: [   0, 180, 0 ],
   };
 
-  // Snap angle: find shortest path forward to target (always add ≥1 full rotation)
+  // Snap angle: shortest path to target face — no extra spin
   function snap(cur, tgt) {
     const c = ((cur % 360) + 360) % 360;
     const t = ((tgt % 360) + 360) % 360;
-    let d = t - c; if (d < 0) d += 360;
-    return cur + d + 360;
+    let d = t - c;
+    if (d >  180) d -= 360;
+    if (d < -180) d += 360;
+    return cur + d;
   }
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -423,7 +427,7 @@
     scene.style.left = (cx - HALF) + 'px';
     scene.style.top  = (cy - HALF) + 'px';
 
-    cube.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1)';
+    cube.style.transition = 'transform 0.25s ease-out';
     cube.style.transform  = `rotateX(${fx}deg) rotateY(${fy}deg) rotateZ(${fz}deg)`;
 
     showShadow(shadow.id, cx, cy, 1);
