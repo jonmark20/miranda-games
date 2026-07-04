@@ -48,45 +48,67 @@
     #game-screen { display: none; width: 100%; max-width: 420px; }
 
     .player-tag {
-      text-align: center; margin-bottom: 24px;
+      text-align: center; margin-bottom: 28px;
       font-size: .9rem; color: #aaa;
     }
     .player-tag strong { color: #e94560; }
 
-    /* ── Dice ────────────────────────────────────────────────────────────── */
+    /* ── Dice table (felt surface) ───────────────────────────────────────── */
+    .dice-table {
+      background: #16213e;
+      border-radius: 24px;
+      padding: 32px 24px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      box-shadow: inset 0 2px 12px rgba(0,0,0,.4);
+    }
+
     .dice-row {
-      display: flex; justify-content: center; gap: 24px; margin-bottom: 28px;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    /* ── Die ─────────────────────────────────────────────────────────────── */
+    .die-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .die-shadow {
+      width: 100px;
+      height: 12px;
+      background: rgba(0,0,0,.4);
+      border-radius: 50%;
+      filter: blur(4px);
+      transition: all 0.3s ease;
     }
 
     .die {
-      width: 100px; height: 100px;
-      background: white; border-radius: 16px;
-      display: grid; grid-template-areas:
+      width: 110px; height: 110px;
+      background: white;
+      border-radius: 18px;
+      display: grid;
+      grid-template-areas:
         "a . b"
         "c e d"
         "f . g";
-      padding: 14px; gap: 6px;
-      box-shadow: 0 6px 24px rgba(0,0,0,.5);
-      transition: transform .1s;
-    }
-
-    .die.rolling {
-      animation: shake .5s ease-in-out;
-    }
-
-    @keyframes shake {
-      0%,100% { transform: rotate(0deg) scale(1); }
-      15%      { transform: rotate(-12deg) scale(1.1); }
-      30%      { transform: rotate(10deg) scale(1.05); }
-      45%      { transform: rotate(-8deg) scale(1.1); }
-      60%      { transform: rotate(6deg) scale(1.05); }
-      75%      { transform: rotate(-4deg) scale(1.02); }
-      90%      { transform: rotate(2deg) scale(1); }
+      padding: 16px; gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.3);
+      will-change: transform;
+      position: relative;
+      z-index: 1;
     }
 
     .pip {
       width: 100%; aspect-ratio: 1;
-      background: #1a1a2e; border-radius: 50%;
+      background: #1a1a2e;
+      border-radius: 50%;
       visibility: hidden;
     }
     .pip.a { grid-area: a; }
@@ -97,7 +119,6 @@
     .pip.f { grid-area: f; }
     .pip.g { grid-area: g; }
 
-    /* which pips are visible per face value */
     [data-val="1"] .pip.e { visibility: visible; }
     [data-val="2"] .pip.a, [data-val="2"] .pip.g { visibility: visible; }
     [data-val="3"] .pip.a, [data-val="3"] .pip.e, [data-val="3"] .pip.g { visibility: visible; }
@@ -105,31 +126,32 @@
     [data-val="5"] .pip.a, [data-val="5"] .pip.b, [data-val="5"] .pip.e, [data-val="5"] .pip.f, [data-val="5"] .pip.g { visibility: visible; }
     [data-val="6"] .pip.a, [data-val="6"] .pip.b, [data-val="6"] .pip.c, [data-val="6"] .pip.d, [data-val="6"] .pip.f, [data-val="6"] .pip.g { visibility: visible; }
 
-    /* ── Roll info ───────────────────────────────────────────────────────── */
+    /* ── Roll result ─────────────────────────────────────────────────────── */
     .roll-info {
-      text-align: center; margin-bottom: 28px; min-height: 48px;
+      text-align: center; min-height: 52px;
     }
-    .roll-info .roller { font-size: .85rem; color: #aaa; margin-bottom: 4px; }
-    .roll-info .total  { font-size: 2rem; font-weight: 800; color: #e94560; }
+    .roll-info .roller { font-size: .82rem; color: #aaa; margin-bottom: 2px; }
+    .roll-info .total  { font-size: 2.2rem; font-weight: 800; color: #e94560; }
 
     /* ── Roll button ─────────────────────────────────────────────────────── */
     #roll-btn {
-      display: block; width: 100%; padding: 16px;
+      display: block; width: 100%; padding: 18px;
       border-radius: 14px; border: none;
-      background: #e94560; color: white;
-      font-size: 1.2rem; font-weight: 700;
-      cursor: pointer; margin-bottom: 32px;
-      box-shadow: 0 4px 16px rgba(233,69,96,.4);
-      transition: background .15s, transform .1s;
+      background: linear-gradient(135deg, #e94560, #c73652);
+      color: white; font-size: 1.2rem; font-weight: 700;
+      cursor: pointer; margin-bottom: 28px;
+      box-shadow: 0 6px 20px rgba(233,69,96,.4);
+      transition: background .15s, transform .1s, box-shadow .15s;
+      letter-spacing: .5px;
     }
-    #roll-btn:hover   { background: #c73652; }
+    #roll-btn:hover   { box-shadow: 0 8px 24px rgba(233,69,96,.55); transform: translateY(-1px); }
     #roll-btn:active  { transform: scale(.97); }
-    #roll-btn:disabled { background: #555; cursor: not-allowed; box-shadow: none; }
+    #roll-btn:disabled { background: #333; cursor: not-allowed; box-shadow: none; transform: none; }
 
     /* ── History ─────────────────────────────────────────────────────────── */
     .history-title {
-      font-size: .8rem; font-weight: 600; color: #666;
-      text-transform: uppercase; letter-spacing: 1px;
+      font-size: .75rem; font-weight: 600; color: #555;
+      text-transform: uppercase; letter-spacing: 1.2px;
       margin-bottom: 10px;
     }
     .history-list { display: flex; flex-direction: column; gap: 8px; }
@@ -137,18 +159,18 @@
       background: #16213e; border-radius: 10px;
       padding: 10px 14px; display: flex;
       justify-content: space-between; align-items: center;
-      font-size: .88rem;
+      font-size: .88rem; border-left: 3px solid transparent;
     }
+    .history-item.mine { border-left-color: #e94560; }
     .history-item .who  { color: #e94560; font-weight: 600; }
-    .history-item .dice { color: #aaa; font-size: .8rem; }
-    .history-item .tot  { font-weight: 700; font-size: 1rem; }
-    .history-item.mine  { border-left: 3px solid #e94560; }
+    .history-item .dice { color: #555; font-size: .78rem; }
+    .history-item .tot  { font-weight: 800; font-size: 1.05rem; }
   </style>
 </head>
 <body>
 
 <h1>🎲 Miranda Games</h1>
-<p class="subtitle">Dice Roller</p>
+<p class="subtitle">Dice Roller — <a href="/" style="color:#555;text-decoration:none;">← All Games</a></p>
 
 <!-- Name prompt -->
 <div id="name-screen">
@@ -161,37 +183,49 @@
 <div id="game-screen">
   <div class="player-tag">Playing as <strong id="player-display"></strong></div>
 
-  <div class="dice-row">
-    <div class="die" id="die1" data-val="1">
-      <div class="pip a"></div><div class="pip b"></div>
-      <div class="pip c"></div><div class="pip e"></div>
-      <div class="pip d"></div><div class="pip f"></div>
-      <div class="pip g"></div>
+  <div class="dice-table">
+    <div class="dice-row">
+      <div class="die-wrap">
+        <div class="die" id="die1" data-val="1">
+          <div class="pip a"></div><div class="pip b"></div>
+          <div class="pip c"></div><div class="pip e"></div>
+          <div class="pip d"></div><div class="pip f"></div>
+          <div class="pip g"></div>
+        </div>
+        <div class="die-shadow" id="shadow1"></div>
+      </div>
+      <div class="die-wrap">
+        <div class="die" id="die2" data-val="1">
+          <div class="pip a"></div><div class="pip b"></div>
+          <div class="pip c"></div><div class="pip e"></div>
+          <div class="pip d"></div><div class="pip f"></div>
+          <div class="pip g"></div>
+        </div>
+        <div class="die-shadow" id="shadow2"></div>
+      </div>
     </div>
-    <div class="die" id="die2" data-val="1">
-      <div class="pip a"></div><div class="pip b"></div>
-      <div class="pip c"></div><div class="pip e"></div>
-      <div class="pip d"></div><div class="pip f"></div>
-      <div class="pip g"></div>
+
+    <div class="roll-info">
+      <div class="roller" id="roller-name"></div>
+      <div class="total"  id="roll-total"></div>
     </div>
   </div>
 
-  <div class="roll-info">
-    <div class="roller" id="roller-name"></div>
-    <div class="total"  id="roll-total"></div>
-  </div>
-
-  <button id="roll-btn" onclick="rollDice()">🎲 Roll</button>
+  <button id="roll-btn" onclick="rollDice()">🎲  R O L L</button>
 
   <div class="history-title">Roll History</div>
   <div class="history-list" id="history-list"></div>
 </div>
 
 <script>
-  let playerName = '';
-  let lastRollId = 0;
-  let pollTimer  = null;
+  let playerName    = '';
+  let lastRollId    = 0;
+  let pollTimer     = null;
+  let rollInterval  = null;
+  let animating     = false;
+  let pendingResult = null;
 
+  // ── Name ──────────────────────────────────────────────────────────────────
   function saveName() {
     const val = document.getElementById('name-input').value.trim();
     if (!val) { document.getElementById('name-input').focus(); return; }
@@ -204,42 +238,130 @@
     startPolling();
   }
 
+  // ── Rolling animation ─────────────────────────────────────────────────────
+  function rollDice() {
+    if (animating) return;
+    animating     = true;
+    pendingResult = null;
+
+    document.getElementById('roll-btn').disabled = true;
+
+    // Start animation immediately
+    startRollAnim();
+
+    // Fetch result in parallel
+    fetch('/api/dice/roll', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({player_name: playerName})
+    })
+    .then(r => r.json())
+    .then(data => { pendingResult = data; });
+  }
+
+  function startRollAnim() {
+    const die1    = document.getElementById('die1');
+    const die2    = document.getElementById('die2');
+    const shadow1 = document.getElementById('shadow1');
+    const shadow2 = document.getElementById('shadow2');
+
+    let elapsed      = 0;
+    const DURATION   = 900;
+    const TICK       = 70;
+
+    clearInterval(rollInterval);
+
+    rollInterval = setInterval(() => {
+      elapsed += TICK;
+
+      // Slow down in last 30% of animation
+      const phase   = elapsed / DURATION;
+      const rolling = phase < 0.7;
+      const angle   = rolling ? 38 : 38 * (1 - (phase - 0.7) / 0.3);
+      const scale   = rolling ? 1.1 : 1 + 0.1 * (1 - (phase - 0.7) / 0.3);
+
+      // Random face
+      die1.dataset.val = Math.ceil(Math.random() * 6);
+      die2.dataset.val = Math.ceil(Math.random() * 6);
+
+      // 3D perspective tilt — each die independent
+      const rx1 = (Math.random() - 0.5) * angle;
+      const ry1 = (Math.random() - 0.5) * angle;
+      const rx2 = (Math.random() - 0.5) * angle;
+      const ry2 = (Math.random() - 0.5) * angle;
+
+      die1.style.transition = 'none';
+      die2.style.transition = 'none';
+      die1.style.transform = `perspective(180px) rotateX(${rx1}deg) rotateY(${ry1}deg) scale(${scale})`;
+      die2.style.transform = `perspective(180px) rotateX(${rx2}deg) rotateY(${ry2}deg) scale(${scale})`;
+
+      // Shadow lifts when dice are "in the air"
+      const shadowScale = rolling ? 0.6 : 0.6 + 0.4 * (phase - 0.7) / 0.3;
+      const shadowOpacity = rolling ? 0.2 : 0.2 + 0.2 * (phase - 0.7) / 0.3;
+      shadow1.style.transform = `scaleX(${shadowScale})`;
+      shadow2.style.transform = `scaleX(${shadowScale})`;
+      shadow1.style.opacity   = shadowOpacity;
+      shadow2.style.opacity   = shadowOpacity;
+
+      if (elapsed >= DURATION) {
+        clearInterval(rollInterval);
+        landDice();
+      }
+    }, TICK);
+  }
+
+  function landDice() {
+    // Wait for server result if not back yet
+    if (!pendingResult) {
+      setTimeout(landDice, 80);
+      return;
+    }
+
+    const die1    = document.getElementById('die1');
+    const die2    = document.getElementById('die2');
+    const shadow1 = document.getElementById('shadow1');
+    const shadow2 = document.getElementById('shadow2');
+
+    die1.dataset.val = pendingResult.die1;
+    die2.dataset.val = pendingResult.die2;
+
+    // Bounce landing
+    die1.style.transition = 'transform 0.35s cubic-bezier(0.17, 0.67, 0.35, 1.2), box-shadow 0.35s';
+    die2.style.transition = 'transform 0.35s cubic-bezier(0.17, 0.67, 0.35, 1.2), box-shadow 0.35s';
+    die1.style.transform  = 'perspective(180px) rotateX(0deg) rotateY(0deg) scale(1)';
+    die2.style.transform  = 'perspective(180px) rotateX(0deg) rotateY(0deg) scale(1)';
+
+    shadow1.style.transition = 'all 0.35s ease';
+    shadow2.style.transition = 'all 0.35s ease';
+    shadow1.style.transform  = 'scaleX(1)';
+    shadow2.style.transform  = 'scaleX(1)';
+    shadow1.style.opacity    = '0.4';
+    shadow2.style.opacity    = '0.4';
+
+    // Update result display
+    document.getElementById('roller-name').textContent = pendingResult.player_name + ' rolled';
+    document.getElementById('roll-total').textContent  = pendingResult.total;
+    lastRollId = pendingResult.id;
+    pendingResult = null;
+
+    setTimeout(() => {
+      animating = false;
+      document.getElementById('roll-btn').disabled = false;
+      fetchLatest();
+    }, 400);
+  }
+
+  // ── Polling & history ─────────────────────────────────────────────────────
   function setDie(id, val) {
     document.getElementById(id).dataset.val = val;
   }
 
-  function animateDice() {
-    ['die1','die2'].forEach(id => {
-      const el = document.getElementById(id);
-      el.classList.remove('rolling');
-      void el.offsetWidth;
-      el.classList.add('rolling');
-    });
-  }
-
-  async function rollDice() {
-    const btn = document.getElementById('roll-btn');
-    btn.disabled = true;
-    animateDice();
-
-    const res  = await fetch('/api/dice/roll', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({player_name: playerName})
-    });
-    const data = await res.json();
-
-    setTimeout(() => {
-      applyRoll(data);
-      btn.disabled = false;
-    }, 520);
-  }
-
   function applyRoll(data) {
+    if (animating) return; // don't overwrite mid-animation
     setDie('die1', data.die1);
     setDie('die2', data.die2);
     document.getElementById('roller-name').textContent = data.player_name + ' rolled';
-    document.getElementById('roll-total').textContent  = data.total;
-    lastRollId = data.id || lastRollId;
+    document.getElementById('roll-total').textContent  = data.die1 + data.die2;
+    lastRollId = data.id;
   }
 
   function renderHistory(history) {
@@ -249,7 +371,7 @@
       const time = new Date(r.rolled_at + 'Z').toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
       return `<div class="history-item ${mine}">
         <span class="who">${esc(r.player_name)}</span>
-        <span class="dice">${r.die1} + ${r.die2} · ${time}</span>
+        <span class="dice">${r.die1} + ${r.die2} &nbsp;·&nbsp; ${time}</span>
         <span class="tot">${r.die1 + r.die2}</span>
       </div>`;
     }).join('');
@@ -260,14 +382,12 @@
     const data = await res.json();
 
     if (data.new_roll && data.latest) {
-      animateDice();
-      setTimeout(() => applyRoll(data.latest), 520);
+      applyRoll(data.latest);
       lastRollId = data.latest.id;
     } else if (data.latest && lastRollId === 0) {
       applyRoll(data.latest);
       lastRollId = data.latest.id;
     }
-
     if (data.history) renderHistory(data.history);
   }
 
@@ -280,12 +400,10 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Restore name from localStorage
+  // ── Init ──────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('dice_player_name');
-    if (saved) {
-      document.getElementById('name-input').value = saved;
-    }
+    if (saved) document.getElementById('name-input').value = saved;
     document.getElementById('name-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') saveName();
     });
