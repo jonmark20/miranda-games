@@ -122,7 +122,7 @@ const TABLE_W = 9.2, TABLE_D = 5.6, TABLE_H = 0.22;
 const RAIL_W  = 0.55, RAIL_H = 0.38;
 const DIE_SZ  = 1.0;
 const LAND_Y  = TABLE_H / 2 + DIE_SZ / 2;   // die rests on table top
-const START_Y = 9;                             // drop from here
+const START_Y = 4.5;                           // drop from here (within camera view)
 
 let scene, camera, renderer, die1, die2;
 
@@ -223,14 +223,14 @@ function makeFaceTex(value) {
 function initThree() {
   const wrap = document.getElementById('canvas-wrap');
   const W = wrap.clientWidth;
-  const H = Math.round(W * 0.62);   // nice aspect for the table
+  const H = Math.round(W * 0.72);   // taller viewport shows more of the table
 
   scene    = new THREE.Scene();
   scene.background = new THREE.Color(0x111111);
   scene.fog = new THREE.Fog(0x111111, 18, 30);
 
-  camera   = new THREE.PerspectiveCamera(46, W / H, 0.1, 60);
-  camera.position.set(0, 13, 4.5);
+  camera   = new THREE.PerspectiveCamera(36, W / H, 0.1, 60);
+  camera.position.set(0, 6, 2.5);
   camera.lookAt(0, 0, 0);
 
   const canvas = document.getElementById('dice-canvas');
@@ -248,9 +248,9 @@ function initThree() {
   sun.position.set(4, 12, 6);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.camera.near = 1; sun.shadow.camera.far = 30;
-  sun.shadow.camera.left = -8; sun.shadow.camera.right = 8;
-  sun.shadow.camera.top =  6; sun.shadow.camera.bottom = -6;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 22;
+  sun.shadow.camera.left = -5; sun.shadow.camera.right = 5;
+  sun.shadow.camera.top =  4; sun.shadow.camera.bottom = -4;
   sun.shadow.bias = -0.001;
   scene.add(sun);
 
@@ -302,8 +302,8 @@ function initThree() {
   ds2  = makeDieState(die2);
 
   // Rest them at default positions
-  placeDieResting(ds1, -2.2, 0);
-  placeDieResting(ds2,  2.2, 0);
+  placeDieResting(ds1, -1.6, 0.2);
+  placeDieResting(ds2,  1.6, -0.2);
 
   // Start render loop
   (function loop() {
@@ -392,11 +392,12 @@ function launchDie(ds, x, z, onDone) {
 
 // Random position within the table bounds for each side
 function randPos(side) {
-  const xMax = TABLE_W / 2 - RAIL_W - DIE_SZ * 0.7;
-  const zMax = TABLE_D / 2 - RAIL_W - DIE_SZ * 0.7;
+  // Constrained to the zoomed visible area (~6 world units wide)
+  const xMax = 2.2;
+  const zMax = 1.3;
   const x = side === 'L'
-    ? -(0.6 + Math.random() * (xMax - 0.6))
-    :  (0.6 + Math.random() * (xMax - 0.6));
+    ? -(0.55 + Math.random() * (xMax - 0.55))
+    :  (0.55 + Math.random() * (xMax - 0.55));
   const z = (Math.random() * 2 - 1) * zMax;
   return [x, z];
 }
