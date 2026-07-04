@@ -50,33 +50,34 @@
     .player-tag  { font-size: .8rem; color: #555; text-align: center; margin-bottom: 8px; }
     .player-tag strong { color: #e94560; }
 
-    /* ── Game area: above-table zone + table ─────────────────────────────── */
+    /* ── Game area — the table top viewed from above ─────────────────────── */
     .game-area {
       position: relative;
       width: 100%;
-      height: 380px;      /* 100px above-table + 280px table */
+      height: 270px;
       margin-bottom: 18px;
     }
 
-    /* Wooden outer rail — oval table */
+    /* Wooden outer rail */
     .table-rail {
       position: absolute;
-      top: 96px; left: 2px; right: 2px; bottom: 4px;
-      border-radius: 50%;
+      inset: 0;
+      border-radius: 20px;
       background: linear-gradient(160deg, #7a4a24 0%, #5c3317 40%, #4a2910 60%, #6b3d1c 100%);
-      box-shadow: 0 16px 48px rgba(0,0,0,.8), 0 3px 0 #2e1708, inset 0 1px 0 rgba(255,255,255,.08);
+      box-shadow: 0 14px 44px rgba(0,0,0,.75), 0 3px 0 #2e1708,
+                  inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    /* Green felt surface — oval inset */
+    /* Green felt — inset from rail */
     .table-felt {
       position: absolute;
-      top: 110px; left: 18px; right: 18px; bottom: 18px;
-      border-radius: 50%;
+      inset: 10px;
+      border-radius: 12px;
       background:
         repeating-linear-gradient(45deg,  rgba(255,255,255,.014) 0, rgba(255,255,255,.014) 1px, transparent 1px, transparent 18px),
         repeating-linear-gradient(-45deg, rgba(255,255,255,.014) 0, rgba(255,255,255,.014) 1px, transparent 1px, transparent 18px),
-        radial-gradient(ellipse at 50% 40%, #2f9040 0%, #1e6a2c 45%, #155222 100%);
-      box-shadow: inset 0 0 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
+        radial-gradient(ellipse at 50% 50%, #2f9040 0%, #1e6a2c 45%, #155222 100%);
+      box-shadow: inset 0 0 60px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     /* ── 3D Die ──────────────────────────────────────────────────────────── */
@@ -104,11 +105,10 @@
       padding: 13px; gap: 7px;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      /* Simulated edge depth */
       box-shadow: inset -2px -2px 5px rgba(0,0,0,.12), inset 2px 2px 5px rgba(255,255,255,.55);
     }
 
-    /* Directional lighting — front brightest, sides shaded */
+    /* Directional lighting */
     .face.front  { background: #ffffff; transform: translateZ(40px); }
     .face.back   { background: #d4d4d0; transform: rotateY(180deg) translateZ(40px); }
     .face.right  { background: #eeeeeb; transform: rotateY(90deg)  translateZ(40px); }
@@ -116,7 +116,7 @@
     .face.top    { background: #f6f6f3; transform: rotateX(-90deg) translateZ(40px); }
     .face.bottom { background: #dcdcd8; transform: rotateX(90deg)  translateZ(40px); }
 
-    /* Subtle gloss highlight on each face */
+    /* Gloss highlight */
     .face::after {
       content: '';
       position: absolute;
@@ -137,7 +137,6 @@
     .p.e { grid-area: e; } .p.f { grid-area: f; }
     .p.g { grid-area: g; }
 
-    /* Pip visibility per face value */
     [data-pip="1"] .p.e { visibility: visible; }
     [data-pip="2"] .p.a, [data-pip="2"] .p.g { visibility: visible; }
     [data-pip="3"] .p.a, [data-pip="3"] .p.e, [data-pip="3"] .p.g { visibility: visible; }
@@ -145,13 +144,13 @@
     [data-pip="5"] .p.a, [data-pip="5"] .p.b, [data-pip="5"] .p.e, [data-pip="5"] .p.f, [data-pip="5"] .p.g { visibility: visible; }
     [data-pip="6"] .p.a, [data-pip="6"] .p.b, [data-pip="6"] .p.c, [data-pip="6"] .p.d, [data-pip="6"] .p.f, [data-pip="6"] .p.g { visibility: visible; }
 
-    /* Drop shadow on felt */
+    /* Shadow on felt */
     .die-shadow {
       position: absolute;
       height: 14px;
-      background: rgba(0,0,0,.5);
+      background: rgba(0,0,0,.55);
       border-radius: 50%;
-      filter: blur(8px);
+      filter: blur(6px);
       z-index: 3;
       opacity: 0;
       pointer-events: none;
@@ -256,27 +255,20 @@
 </div>
 
 <script>
-  // ── Layout constants ───────────────────────────────────────────────────────
-  const CUBE    = 80;
-  const HALF    = CUBE / 2;
-  const GAME_H  = 380;
-  const LAND_CY = 288;                   // center-Y when resting — within the oval felt
-  const SHADOW_Y = LAND_CY + HALF + 4;  // shadow sits just below resting die
+  const CUBE = 80;
+  const HALF = CUBE / 2;
 
-  // ── Target cube rotations to show each face value ─────────────────────────
   // Face layout: front=1, back=6, right=3, left=4, top=2, bottom=5
-  // rotateX(+90)=bottom toward viewer, rotateX(-90)=top toward viewer
-  // rotateY(+90)=left toward viewer,   rotateY(-90)=right toward viewer
   const FACE_ROT = {
-    1: [   0,   0, 0 ],
-    2: [  90,   0, 0 ],
-    3: [   0, -90, 0 ],
-    4: [   0,  90, 0 ],
-    5: [ -90,   0, 0 ],
-    6: [   0, 180, 0 ],
+    1: [  0,   0, 0],
+    2: [ 90,   0, 0],
+    3: [  0, -90, 0],
+    4: [  0,  90, 0],
+    5: [-90,   0, 0],
+    6: [  0, 180, 0],
   };
 
-  // Snap angle: shortest path to target face — no extra spin
+  // Shortest-path angle snap
   function snap(cur, tgt) {
     const c = ((cur % 360) + 360) % 360;
     const t = ((tgt % 360) + 360) % 360;
@@ -286,14 +278,28 @@
     return cur + d;
   }
 
-  // ── State ──────────────────────────────────────────────────────────────────
   let playerName    = '';
   let lastRollId    = 0;
   let pollTimer     = null;
   let animating     = false;
   let pendingResult = null;
 
-  function tw() { return document.getElementById('game-area').clientWidth; }
+  const gameArea = () => document.getElementById('game-area');
+  const areaW    = () => gameArea().clientWidth;
+  const areaH    = () => gameArea().clientHeight;
+
+  // Random landing position within the felt, ensuring the two dice
+  // stay in separate halves so they don't overlap.
+  function randomLand(side) {
+    const w = areaW(), h = areaH();
+    const pad = HALF + 18;   // keep dice off the rail
+    const midX = w / 2;
+    const cx = side === 'left'
+      ? pad + Math.random() * (midX - pad - HALF - 10)
+      : midX + HALF + 10 + Math.random() * (midX - pad - HALF - 10);
+    const cy = pad + Math.random() * (h - 2 * pad);
+    return { cx, cy };
+  }
 
   // ── Name ──────────────────────────────────────────────────────────────────
   function saveName() {
@@ -304,109 +310,122 @@
     document.getElementById('name-screen').style.display  = 'none';
     document.getElementById('game-screen').style.display  = 'block';
     document.getElementById('player-display').textContent = v;
-    placeDiceResting();
+    placeDiceDefault();
     fetchLatest();
     startPolling();
   }
 
-  function placeDiceResting() {
-    const w = tw();
-    positionScene('scene1', w * 0.22, LAND_CY);
-    positionScene('scene2', w * 0.62, LAND_CY);
-    showShadow('shadow1', w * 0.22, LAND_CY, 1);
-    showShadow('shadow2', w * 0.62, LAND_CY, 1);
+  function placeDiceDefault() {
+    const w = areaW(), h = areaH();
+    placeSceneAt('scene1', 'shadow1', w * 0.27, h * 0.5, 1);
+    placeSceneAt('scene2', 'shadow2', w * 0.67, h * 0.5, 1);
   }
 
-  function positionScene(id, cx, cy) {
-    const el = document.getElementById(id);
-    el.style.left = (cx - HALF) + 'px';
-    el.style.top  = (cy - HALF) + 'px';
+  function placeSceneAt(sceneId, shadowId, cx, cy, scale) {
+    const scene = document.getElementById(sceneId);
+    scene.style.left = (cx - HALF) + 'px';
+    scene.style.top  = (cy - HALF) + 'px';
+    const cube = scene.querySelector('.die-cube');
+    cube.style.transition = 'none';
+    cube.style.transform  = `scale(${scale}) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
+    updateShadow(shadowId, cx, cy, scale);
   }
 
-  function showShadow(id, cx, cy, prox) {
+  function updateShadow(id, cx, cy, scale) {
     const el = document.getElementById(id);
-    const w  = Math.max(12, CUBE * 0.82 * prox);
-    const op = Math.max(0, 0.5 * prox);
-    const heightAbove = Math.max(0, LAND_CY - cy);
-    const yPos = SHADOW_Y - Math.min(heightAbove * 0.12, 20); // shadow lifts slightly when die is high
+    const w  = CUBE * scale * 0.88;
     el.style.width   = w + 'px';
-    el.style.opacity = op;
+    el.style.height  = '14px';
+    el.style.opacity = scale * 0.5;
     el.style.left    = (cx - w / 2) + 'px';
-    el.style.top     = yPos + 'px';
+    el.style.top     = (cy + HALF * scale - 2) + 'px';
   }
 
-  // ── Physics die launch ─────────────────────────────────────────────────────
-  function launchDie(sceneId, cubeId, shadowId, startCX, landCX, delay, getVal, onDone) {
+  // ── Top-down drop animation ────────────────────────────────────────────────
+  // The die starts tiny at its final X,Y and grows as it "falls" toward the felt.
+  function launchDie(sceneId, shadowId, cx, cy, delay, getVal, onDone) {
     setTimeout(() => {
-      const scene  = document.getElementById(sceneId);
-      const cube   = document.getElementById(cubeId);
-      const shadow = document.getElementById(shadowId);
+      const scene = document.getElementById(sceneId);
+      const cube  = scene.querySelector('.die-cube');
 
-      const minX = HALF + 14, maxX = tw() - HALF - 14;
+      scene.style.left = (cx - HALF) + 'px';
+      scene.style.top  = (cy - HALF) + 'px';
+      cube.style.transition = 'none';
 
-      let cx = Math.min(Math.max(startCX, minX), maxX);
-      let cy = -HALF;
+      let scale = 0.04;
+      let vScale = 0.002;          // velocity — accelerates each frame (gravity)
 
-      let vy = 0.8 + Math.random() * 0.5;
-      let vx = (landCX - cx) * 0.022 + (Math.random() - 0.5) * 0.6;
-
-      // Start with a random rotation
       let rx = Math.random() * 360;
       let ry = Math.random() * 360;
       let rz = Math.random() * 360;
-      const rSign = () => Math.random() > 0.5 ? 1 : -1;
+      const rSign = () => (Math.random() > 0.5 ? 1 : -1);
       let sx = rSign() * (5 + Math.random() * 5);
       let sy = rSign() * (6 + Math.random() * 6);
       let sz = rSign() * (2 + Math.random() * 3);
 
-      const G = 0.28;
-      let bounces = 0;
-
-      cube.style.transition  = 'none';
-      scene.style.transition = 'none';
-
       function tick() {
-        vy += G;
-        cy += vy;
-        cx += vx;
-        rx += sx;
-        ry += sy;
-        rz += sz;
+        vScale += 0.0016;  // accelerate (gravity)
+        scale  += vScale;
+        rx += sx; ry += sy; rz += sz;
 
-        if (cx < minX) { cx = minX; vx =  Math.abs(vx) * 0.45; }
-        if (cx > maxX) { cx = maxX; vx = -Math.abs(vx) * 0.45; }
+        const s = Math.min(scale, 1.0);
+        cube.style.transform = `scale(${s}) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+        updateShadow(shadowId, cx, cy, s);
 
-        if (cy >= LAND_CY) {
-          cy = LAND_CY;
-          bounces++;
-          const restitution = Math.max(0.04, 0.40 - bounces * 0.09);
-          vy  = -Math.abs(vy) * restitution;
-          vx *= 0.68;
-          sx *= 0.50; sy *= 0.50; sz *= 0.50;
-
-          if (Math.abs(vy) < 0.75 || bounces >= 4) {
-            doSettle(scene, cube, shadow, cx, cy, rx, ry, rz, getVal, onDone);
-            return;
-          }
+        if (scale >= 1.0) {
+          doBounce(cube, shadowId, cx, cy, rx, ry, rz, sx, sy, sz, getVal, onDone);
+          return;
         }
-
-        scene.style.left     = (cx - HALF) + 'px';
-        scene.style.top      = (cy - HALF) + 'px';
-        cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
-
-        const prox = Math.max(0, 1 - Math.max(0, LAND_CY - cy) / (LAND_CY + HALF));
-        showShadow(shadowId, cx, cy, prox);
-
         requestAnimationFrame(tick);
       }
       requestAnimationFrame(tick);
     }, delay);
   }
 
-  function doSettle(scene, cube, shadow, cx, cy, rx, ry, rz, getVal, onDone) {
+  // Brief bounce on impact, then settle to correct face
+  function doBounce(cube, shadowId, cx, cy, rx, ry, rz, sx, sy, sz, getVal, onDone) {
+    // Slow the spin on impact
+    sx *= 0.25; sy *= 0.25; sz *= 0.25;
+
+    let scale     = 1.0;
+    let vScale    = -0.06;     // bounce up (scale decreases momentarily)
+    let bouncing  = true;
+    let bounceCount = 0;
+
+    function bounceTick() {
+      if (bouncing) {
+        vScale += 0.006;      // gravity pulls it back down
+        scale  += vScale;
+        rx += sx; ry += sy; rz += sz;
+
+        if (scale <= 0.88 || (scale >= 1.0 && vScale > 0 && bounceCount === 0)) {
+          bounceCount++;
+        }
+        if (scale >= 1.0 && vScale > 0) {
+          scale   = 1.0;
+          vScale  = -vScale * 0.3;  // small second bounce
+          sx *= 0.4; sy *= 0.4; sz *= 0.4;
+          bounceCount++;
+        }
+        if (bounceCount >= 2 && Math.abs(vScale) < 0.015) {
+          bouncing = false;
+        }
+
+        const s = Math.max(0.6, Math.min(1.0, scale));
+        cube.style.transform = `scale(${s}) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+        updateShadow(shadowId, cx, cy, s);
+        requestAnimationFrame(bounceTick);
+      } else {
+        doSettle(cube, shadowId, cx, cy, rx, ry, rz, getVal, onDone);
+      }
+    }
+    requestAnimationFrame(bounceTick);
+  }
+
+  function doSettle(cube, shadowId, cx, cy, rx, ry, rz, getVal, onDone) {
     const val = getVal();
     if (!val) {
-      setTimeout(() => doSettle(scene, cube, shadow, cx, cy, rx, ry, rz, getVal, onDone), 60);
+      setTimeout(() => doSettle(cube, shadowId, cx, cy, rx, ry, rz, getVal, onDone), 60);
       return;
     }
 
@@ -415,15 +434,11 @@
     const fy = snap(ry, ty);
     const fz = snap(rz, 0);
 
-    scene.style.left = (cx - HALF) + 'px';
-    scene.style.top  = (cy - HALF) + 'px';
-
     cube.style.transition = 'transform 0.25s ease-out';
-    cube.style.transform  = `rotateX(${fx}deg) rotateY(${fy}deg) rotateZ(${fz}deg)`;
+    cube.style.transform  = `scale(1) rotateX(${fx}deg) rotateY(${fy}deg) rotateZ(${fz}deg)`;
+    updateShadow(shadowId, cx, cy, 1);
 
-    showShadow(shadow.id, cx, cy, 1);
-
-    setTimeout(onDone, 650);
+    setTimeout(onDone, 400);
   }
 
   // ── Roll ──────────────────────────────────────────────────────────────────
@@ -432,13 +447,14 @@
     animating     = true;
     pendingResult = null;
 
-    document.getElementById('roll-btn').disabled      = true;
+    document.getElementById('roll-btn').disabled       = true;
     document.getElementById('roller-name').textContent = '';
     document.getElementById('roll-total').textContent  = '';
 
-    const w = tw();
+    // Pick random landing spots — die 1 left half, die 2 right half
+    const land1 = randomLand('left');
+    const land2 = randomLand('right');
 
-    // Fire result fetch in parallel with animation
     fetch('/api/dice/roll', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({player_name: playerName})
@@ -458,18 +474,13 @@
       fetchLatest();
     }
 
-    // Die 1: upper-left quadrant → lands left-center
-    launchDie('scene1', 'cube1', 'shadow1',
-      w * 0.30, w * 0.22 + (Math.random() - 0.5) * 40,
-      0,
+    launchDie('scene1', 'shadow1', land1.cx, land1.cy, 0,
       () => pendingResult ? pendingResult.die1 : null,
       onSettled
     );
 
-    // Die 2: slightly later, upper-right → lands right-center
-    launchDie('scene2', 'cube2', 'shadow2',
-      w * 0.70, w * 0.62 + (Math.random() - 0.5) * 40,
-      90 + Math.floor(Math.random() * 80),
+    launchDie('scene2', 'shadow2', land2.cx, land2.cy,
+      80 + Math.floor(Math.random() * 80),
       () => pendingResult ? pendingResult.die2 : null,
       onSettled
     );
@@ -478,15 +489,14 @@
   // ── Poll & history ─────────────────────────────────────────────────────────
   function applyRoll(data) {
     if (animating) return;
-    // Snap cubes to correct face without animation
-    const snap3 = (cubeId, val) => {
+    const doSnap = (cubeId, val) => {
       const [tx, ty] = FACE_ROT[val];
-      const c = document.getElementById(cubeId);
-      c.style.transition = 'transform 0.4s ease-out';
-      c.style.transform  = `rotateX(${tx}deg) rotateY(${ty}deg) rotateZ(0deg)`;
+      const c = document.getElementById(cubeId).querySelector('.die-cube');
+      c.style.transition = 'transform 0.35s ease-out';
+      c.style.transform  = `scale(1) rotateX(${tx}deg) rotateY(${ty}deg) rotateZ(0deg)`;
     };
-    snap3('cube1', data.die1);
-    snap3('cube2', data.die2);
+    doSnap('scene1', data.die1);
+    doSnap('scene2', data.die2);
     document.getElementById('roller-name').textContent = data.player_name + ' rolled';
     document.getElementById('roll-total').textContent  = data.die1 + data.die2;
     lastRollId = data.id;
