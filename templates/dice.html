@@ -229,8 +229,8 @@ function initThree() {
   scene.background = new THREE.Color(0x111111);
   scene.fog = new THREE.Fog(0x111111, 18, 30);
 
-  camera   = new THREE.PerspectiveCamera(40, W / H, 0.1, 60);
-  camera.position.set(0, 8, 3);
+  camera   = new THREE.PerspectiveCamera(44, W / H, 0.1, 60);
+  camera.position.set(0, 10, 3.5);
   camera.lookAt(0, 0, 0);
 
   const canvas = document.getElementById('dice-canvas');
