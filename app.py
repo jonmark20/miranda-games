@@ -32,8 +32,13 @@ def migrate_db():
 
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
+
+
+@app.route('/dice')
+def dice():
+    return render_template('dice.html')
 
 
 @app.route('/api/dice/roll', methods=['POST'])
