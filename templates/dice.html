@@ -9,114 +9,111 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #1a1a2e;
+      background: #0d0d0d;
       color: #f0f0f0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 32px 16px;
+      padding: 20px 16px;
     }
 
-    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; letter-spacing: .5px; }
-    .subtitle { font-size: .85rem; color: #888; margin-bottom: 32px; }
+    .top-bar {
+      width: 100%; max-width: 420px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .top-bar h1 { font-size: 1.2rem; font-weight: 700; }
+    .top-bar a  { font-size: .8rem; color: #555; text-decoration: none; }
 
     /* ── Name prompt ─────────────────────────────────────────────────────── */
     #name-screen {
-      background: #16213e;
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 100%;
-      max-width: 340px;
-      text-align: center;
+      background: #1a1a1a; border-radius: 16px;
+      padding: 32px 28px; width: 100%; max-width: 340px; text-align: center;
+      margin-top: 40px;
     }
     #name-screen h2 { margin-bottom: 16px; font-size: 1.1rem; }
     #name-input {
       width: 100%; padding: 12px 16px; border-radius: 10px;
-      border: 2px solid #333; background: #0f3460; color: white;
+      border: 2px solid #333; background: #111; color: white;
       font-size: 1rem; margin-bottom: 14px; outline: none; text-align: center;
     }
     #name-input:focus { border-color: #e94560; }
     #name-btn {
       width: 100%; padding: 12px; border-radius: 10px; border: none;
-      background: #e94560; color: white; font-size: 1rem; font-weight: 600;
-      cursor: pointer;
+      background: #e94560; color: white; font-size: 1rem; font-weight: 600; cursor: pointer;
     }
-    #name-btn:hover { background: #c73652; }
 
     /* ── Game screen ─────────────────────────────────────────────────────── */
     #game-screen { display: none; width: 100%; max-width: 420px; }
 
-    .player-tag {
-      text-align: center; margin-bottom: 28px;
-      font-size: .9rem; color: #aaa;
-    }
+    .player-tag { font-size: .82rem; color: #666; margin-bottom: 10px; text-align: center; }
     .player-tag strong { color: #e94560; }
 
-    /* ── Dice table (felt surface) ───────────────────────────────────────── */
-    .dice-table {
-      background: #16213e;
-      border-radius: 24px;
-      padding: 32px 24px 24px;
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      box-shadow: inset 0 2px 12px rgba(0,0,0,.4);
-    }
-
-    .dice-row {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-    }
-
-    /* ── Die ─────────────────────────────────────────────────────────────── */
-    .die-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .die-shadow {
-      width: 100px;
-      height: 12px;
-      background: rgba(0,0,0,.4);
-      border-radius: 50%;
-      filter: blur(4px);
-      transition: all 0.3s ease;
-    }
-
-    .die {
-      width: 110px; height: 110px;
-      background: white;
-      border-radius: 18px;
-      display: grid;
-      grid-template-areas:
-        "a . b"
-        "c e d"
-        "f . g";
-      padding: 16px; gap: 8px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.3);
-      will-change: transform;
+    /* ── Game area (above-table zone + table) ────────────────────────────── */
+    .game-area {
       position: relative;
-      z-index: 1;
+      width: 100%;
+      height: 380px;  /* 100px above-table + 280px table */
+      margin-bottom: 20px;
+    }
+
+    /* Wooden rail / edge of table */
+    .table-rail {
+      position: absolute;
+      top: 100px; left: 0; right: 0;
+      height: 280px;
+      background: #5c3317;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.7), 0 4px 0 #3d2010;
+    }
+
+    /* Green felt */
+    .table-felt {
+      position: absolute;
+      top: 112px; left: 10px; right: 10px;
+      height: 256px;
+      background:
+        repeating-linear-gradient(45deg,  rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 14px),
+        repeating-linear-gradient(-45deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 14px),
+        radial-gradient(ellipse at 50% 40%, #2e8c3d 0%, #1e6b2a 55%, #165022 100%);
+      border-radius: 12px;
+      box-shadow: inset 0 0 50px rgba(0,0,0,.35);
+    }
+
+    /* Die shadows (on felt surface) */
+    .die-shadow {
+      position: absolute;
+      height: 14px;
+      background: rgba(0,0,0,.45);
+      border-radius: 50%;
+      filter: blur(7px);
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Dice */
+    .die {
+      position: absolute;
+      width: 82px; height: 82px;
+      background: #fffffc;
+      border-radius: 14px;
+      display: grid;
+      grid-template-areas: "a . b" "c e d" "f . g";
+      padding: 13px; gap: 7px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.8);
+      z-index: 3;
+      will-change: transform;
     }
 
     .pip {
       width: 100%; aspect-ratio: 1;
-      background: #1a1a2e;
-      border-radius: 50%;
-      visibility: hidden;
+      background: #1a1a1a; border-radius: 50%; visibility: hidden;
     }
-    .pip.a { grid-area: a; }
-    .pip.b { grid-area: b; }
-    .pip.c { grid-area: c; }
-    .pip.d { grid-area: d; }
-    .pip.e { grid-area: e; }
-    .pip.f { grid-area: f; }
+    .pip.a { grid-area: a; } .pip.b { grid-area: b; }
+    .pip.c { grid-area: c; } .pip.d { grid-area: d; }
+    .pip.e { grid-area: e; } .pip.f { grid-area: f; }
     .pip.g { grid-area: g; }
 
     [data-val="1"] .pip.e { visibility: visible; }
@@ -127,50 +124,48 @@
     [data-val="6"] .pip.a, [data-val="6"] .pip.b, [data-val="6"] .pip.c, [data-val="6"] .pip.d, [data-val="6"] .pip.f, [data-val="6"] .pip.g { visibility: visible; }
 
     /* ── Roll result ─────────────────────────────────────────────────────── */
-    .roll-info {
-      text-align: center; min-height: 52px;
-    }
-    .roll-info .roller { font-size: .82rem; color: #aaa; margin-bottom: 2px; }
+    .roll-info { text-align: center; min-height: 50px; margin-bottom: 14px; }
+    .roll-info .roller { font-size: .8rem; color: #666; margin-bottom: 2px; }
     .roll-info .total  { font-size: 2.2rem; font-weight: 800; color: #e94560; }
 
     /* ── Roll button ─────────────────────────────────────────────────────── */
     #roll-btn {
-      display: block; width: 100%; padding: 18px;
+      display: block; width: 100%; padding: 17px;
       border-radius: 14px; border: none;
-      background: linear-gradient(135deg, #e94560, #c73652);
-      color: white; font-size: 1.2rem; font-weight: 700;
-      cursor: pointer; margin-bottom: 28px;
+      background: linear-gradient(135deg, #e94560, #b8304a);
+      color: white; font-size: 1.15rem; font-weight: 700;
+      cursor: pointer; margin-bottom: 24px; letter-spacing: 1px;
       box-shadow: 0 6px 20px rgba(233,69,96,.4);
-      transition: background .15s, transform .1s, box-shadow .15s;
-      letter-spacing: .5px;
+      transition: transform .1s, box-shadow .1s;
     }
-    #roll-btn:hover   { box-shadow: 0 8px 24px rgba(233,69,96,.55); transform: translateY(-1px); }
-    #roll-btn:active  { transform: scale(.97); }
-    #roll-btn:disabled { background: #333; cursor: not-allowed; box-shadow: none; transform: none; }
+    #roll-btn:hover  { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(233,69,96,.5); }
+    #roll-btn:active { transform: scale(.97); }
+    #roll-btn:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; box-shadow: none; transform: none; }
 
     /* ── History ─────────────────────────────────────────────────────────── */
     .history-title {
-      font-size: .75rem; font-weight: 600; color: #555;
-      text-transform: uppercase; letter-spacing: 1.2px;
-      margin-bottom: 10px;
+      font-size: .72rem; font-weight: 600; color: #444;
+      text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px;
     }
-    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .history-list { display: flex; flex-direction: column; gap: 7px; }
     .history-item {
-      background: #16213e; border-radius: 10px;
-      padding: 10px 14px; display: flex;
+      background: #1a1a1a; border-radius: 10px;
+      padding: 9px 14px; display: flex;
       justify-content: space-between; align-items: center;
-      font-size: .88rem; border-left: 3px solid transparent;
+      font-size: .86rem; border-left: 3px solid transparent;
     }
     .history-item.mine { border-left-color: #e94560; }
     .history-item .who  { color: #e94560; font-weight: 600; }
-    .history-item .dice { color: #555; font-size: .78rem; }
-    .history-item .tot  { font-weight: 800; font-size: 1.05rem; }
+    .history-item .dice { color: #444; font-size: .76rem; }
+    .history-item .tot  { font-weight: 800; font-size: 1rem; }
   </style>
 </head>
 <body>
 
-<h1>🎲 Miranda Games</h1>
-<p class="subtitle">Dice Roller — <a href="/" style="color:#555;text-decoration:none;">← All Games</a></p>
+<div class="top-bar">
+  <h1>🎲 Dice Roller</h1>
+  <a href="/">← All Games</a>
+</div>
 
 <!-- Name prompt -->
 <div id="name-screen">
@@ -183,47 +178,58 @@
 <div id="game-screen">
   <div class="player-tag">Playing as <strong id="player-display"></strong></div>
 
-  <div class="dice-table">
-    <div class="dice-row">
-      <div class="die-wrap">
-        <div class="die" id="die1" data-val="1">
-          <div class="pip a"></div><div class="pip b"></div>
-          <div class="pip c"></div><div class="pip e"></div>
-          <div class="pip d"></div><div class="pip f"></div>
-          <div class="pip g"></div>
-        </div>
-        <div class="die-shadow" id="shadow1"></div>
-      </div>
-      <div class="die-wrap">
-        <div class="die" id="die2" data-val="1">
-          <div class="pip a"></div><div class="pip b"></div>
-          <div class="pip c"></div><div class="pip e"></div>
-          <div class="pip d"></div><div class="pip f"></div>
-          <div class="pip g"></div>
-        </div>
-        <div class="die-shadow" id="shadow2"></div>
-      </div>
-    </div>
+  <div class="game-area" id="game-area">
+    <div class="table-rail"></div>
+    <div class="table-felt"></div>
 
-    <div class="roll-info">
-      <div class="roller" id="roller-name"></div>
-      <div class="total"  id="roll-total"></div>
+    <!-- Shadows on felt -->
+    <div class="die-shadow" id="shadow1"></div>
+    <div class="die-shadow" id="shadow2"></div>
+
+    <!-- Dice -->
+    <div class="die" id="die1" data-val="6">
+      <div class="pip a"></div><div class="pip b"></div><div class="pip c"></div>
+      <div class="pip e"></div><div class="pip d"></div>
+      <div class="pip f"></div><div class="pip g"></div>
+    </div>
+    <div class="die" id="die2" data-val="6">
+      <div class="pip a"></div><div class="pip b"></div><div class="pip c"></div>
+      <div class="pip e"></div><div class="pip d"></div>
+      <div class="pip f"></div><div class="pip g"></div>
     </div>
   </div>
 
-  <button id="roll-btn" onclick="rollDice()">🎲  R O L L</button>
+  <div class="roll-info">
+    <div class="roller" id="roller-name"></div>
+    <div class="total"  id="roll-total"></div>
+  </div>
+
+  <button id="roll-btn" onclick="rollDice()">🎲 &nbsp; R O L L</button>
 
   <div class="history-title">Roll History</div>
   <div class="history-list" id="history-list"></div>
 </div>
 
 <script>
+  // ── Constants ──────────────────────────────────────────────────────────────
+  const DIE_SIZE  = 82;
+  const ABOVE     = 100;   // px above-table zone height in .game-area
+  const TABLE_H   = 268;   // felt height (game-area height minus above minus rail padding)
+  const LAND_Y    = ABOVE + TABLE_H - DIE_SIZE - 14;  // y where die rests on felt
+
+  // ── State ──────────────────────────────────────────────────────────────────
   let playerName    = '';
   let lastRollId    = 0;
   let pollTimer     = null;
-  let rollInterval  = null;
   let animating     = false;
   let pendingResult = null;
+
+  // Starting positions for each die (will be set after layout)
+  let tableWidth = 380;
+
+  function getTableWidth() {
+    return document.getElementById('game-area').clientWidth;
+  }
 
   // ── Name ──────────────────────────────────────────────────────────────────
   function saveName() {
@@ -231,142 +237,193 @@
     if (!val) { document.getElementById('name-input').focus(); return; }
     playerName = val;
     localStorage.setItem('dice_player_name', val);
-    document.getElementById('name-screen').style.display  = 'none';
-    document.getElementById('game-screen').style.display  = 'block';
+    document.getElementById('name-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
     document.getElementById('player-display').textContent = val;
+    tableWidth = getTableWidth();
+    placeDiceResting();
     fetchLatest();
     startPolling();
   }
 
-  // ── Rolling animation ─────────────────────────────────────────────────────
-  function rollDice() {
-    if (animating) return;
-    animating     = true;
-    pendingResult = null;
-
-    document.getElementById('roll-btn').disabled = true;
-
-    // Start animation immediately
-    startRollAnim();
-
-    // Fetch result in parallel
-    fetch('/api/dice/roll', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({player_name: playerName})
-    })
-    .then(r => r.json())
-    .then(data => { pendingResult = data; });
+  // Place dice in resting position without animation (initial state)
+  function placeDiceResting() {
+    const tw = getTableWidth();
+    const d1 = document.getElementById('die1');
+    const d2 = document.getElementById('die2');
+    d1.style.left = Math.floor(tw * 0.22) + 'px';
+    d1.style.top  = LAND_Y + 'px';
+    d1.style.transform = 'rotate(0deg)';
+    d2.style.left = Math.floor(tw * 0.58) + 'px';
+    d2.style.top  = LAND_Y + 'px';
+    d2.style.transform = 'rotate(0deg)';
+    setShadow('shadow1', Math.floor(tw * 0.22), LAND_Y, 1);
+    setShadow('shadow2', Math.floor(tw * 0.58), LAND_Y, 1);
   }
 
-  function startRollAnim() {
-    const die1    = document.getElementById('die1');
-    const die2    = document.getElementById('die2');
-    const shadow1 = document.getElementById('shadow1');
-    const shadow2 = document.getElementById('shadow2');
+  // ── Physics simulation for one die ────────────────────────────────────────
+  function launchDie(dieId, shadowId, startX, landX, delayMs, getVal, onSettled) {
+    setTimeout(() => {
+      const die    = document.getElementById(dieId);
+      const shadow = document.getElementById(shadowId);
 
-    let elapsed      = 0;
-    const DURATION   = 900;
-    const TICK       = 70;
+      let x  = startX;
+      let y  = -DIE_SIZE;       // start just above game-area
+      let vy = 1 + Math.random();
+      let vx = (landX - startX) * 0.022 + (Math.random() - 0.5) * 0.8;
+      let rotation  = Math.random() * 360;
+      let rotSpeed  = (Math.random() > 0.5 ? 1 : -1) * (9 + Math.random() * 7);
+      let bounces   = 0;
+      let frameN    = 0;
+      const G       = 0.32;
+      const tw      = getTableWidth();
+      const minX    = 14;
+      const maxX    = tw - DIE_SIZE - 14;
 
-    clearInterval(rollInterval);
+      die.style.transition = 'none';
 
-    rollInterval = setInterval(() => {
-      elapsed += TICK;
+      function tick() {
+        frameN++;
+        vy += G;
+        y  += vy;
+        x  += vx;
 
-      // Slow down in last 30% of animation
-      const phase   = elapsed / DURATION;
-      const rolling = phase < 0.7;
-      const angle   = rolling ? 38 : 38 * (1 - (phase - 0.7) / 0.3);
-      const scale   = rolling ? 1.1 : 1 + 0.1 * (1 - (phase - 0.7) / 0.3);
+        // Wall bounce
+        if (x < minX) { x = minX; vx = Math.abs(vx) * 0.5; }
+        if (x > maxX) { x = maxX; vx = -Math.abs(vx) * 0.5; }
 
-      // Random face
-      die1.dataset.val = Math.ceil(Math.random() * 6);
-      die2.dataset.val = Math.ceil(Math.random() * 6);
+        // Table surface bounce
+        if (y >= LAND_Y) {
+          y = LAND_Y;
+          bounces++;
+          const restitution = Math.max(0.05, 0.42 - bounces * 0.09);
+          vy = -Math.abs(vy) * restitution;
+          vx *= 0.72;
+          rotSpeed *= 0.52;
 
-      // 3D perspective tilt — each die independent
-      const rx1 = (Math.random() - 0.5) * angle;
-      const ry1 = (Math.random() - 0.5) * angle;
-      const rx2 = (Math.random() - 0.5) * angle;
-      const ry2 = (Math.random() - 0.5) * angle;
+          // Settle when bouncing is tiny
+          if (Math.abs(vy) < 0.7 || bounces >= 4) {
+            settle(die, shadow, x, getVal, onSettled);
+            return;
+          }
+        }
 
-      die1.style.transition = 'none';
-      die2.style.transition = 'none';
-      die1.style.transform = `perspective(180px) rotateX(${rx1}deg) rotateY(${ry1}deg) scale(${scale})`;
-      die2.style.transform = `perspective(180px) rotateX(${rx2}deg) rotateY(${ry2}deg) scale(${scale})`;
+        // Update face randomly every 3 frames
+        if (frameN % 3 === 0) die.dataset.val = Math.ceil(Math.random() * 6);
 
-      // Shadow lifts when dice are "in the air"
-      const shadowScale = rolling ? 0.6 : 0.6 + 0.4 * (phase - 0.7) / 0.3;
-      const shadowOpacity = rolling ? 0.2 : 0.2 + 0.2 * (phase - 0.7) / 0.3;
-      shadow1.style.transform = `scaleX(${shadowScale})`;
-      shadow2.style.transform = `scaleX(${shadowScale})`;
-      shadow1.style.opacity   = shadowOpacity;
-      shadow2.style.opacity   = shadowOpacity;
+        // 3D tilt perspective during fall
+        const tiltX = (Math.random() - 0.5) * 28;
+        const tiltY = (Math.random() - 0.5) * 28;
+        die.style.left      = x + 'px';
+        die.style.top       = y + 'px';
+        die.style.transform = `perspective(200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotation}deg)`;
+        rotation += rotSpeed;
 
-      if (elapsed >= DURATION) {
-        clearInterval(rollInterval);
-        landDice();
+        // Shadow: grows as die approaches table
+        const height = Math.max(0, LAND_Y - y);
+        const proximity = Math.max(0, 1 - height / (LAND_Y + DIE_SIZE));
+        setShadow(shadowId, x, LAND_Y, proximity);
+
+        requestAnimationFrame(tick);
       }
-    }, TICK);
+
+      requestAnimationFrame(tick);
+    }, delayMs);
   }
 
-  function landDice() {
-    // Wait for server result if not back yet
-    if (!pendingResult) {
-      setTimeout(landDice, 80);
+  function settle(die, shadow, x, getVal, onSettled) {
+    // Wait for server result if not yet back
+    const val = getVal();
+    if (val === null) {
+      setTimeout(() => settle(die, shadow, x, getVal, onSettled), 60);
       return;
     }
 
-    const die1    = document.getElementById('die1');
-    const die2    = document.getElementById('die2');
-    const shadow1 = document.getElementById('shadow1');
-    const shadow2 = document.getElementById('shadow2');
+    die.dataset.val = val;
+    die.style.transition = 'transform 0.22s cubic-bezier(0.17, 0.67, 0.35, 1.18)';
+    die.style.transform  = 'rotate(0deg)';
+    setShadow(die.id === 'die1' ? 'shadow1' : 'shadow2', x, LAND_Y, 1);
 
-    die1.dataset.val = pendingResult.die1;
-    die2.dataset.val = pendingResult.die2;
+    setTimeout(onSettled, 280);
+  }
 
-    // Bounce landing
-    die1.style.transition = 'transform 0.35s cubic-bezier(0.17, 0.67, 0.35, 1.2), box-shadow 0.35s';
-    die2.style.transition = 'transform 0.35s cubic-bezier(0.17, 0.67, 0.35, 1.2), box-shadow 0.35s';
-    die1.style.transform  = 'perspective(180px) rotateX(0deg) rotateY(0deg) scale(1)';
-    die2.style.transform  = 'perspective(180px) rotateX(0deg) rotateY(0deg) scale(1)';
+  function setShadow(id, dieX, dieY, proximity) {
+    const el = document.getElementById(id);
+    const w  = Math.max(16, DIE_SIZE * 0.9 * proximity);
+    const op = Math.max(0, 0.5 * proximity);
+    el.style.width   = w + 'px';
+    el.style.opacity = op;
+    el.style.left    = (dieX + DIE_SIZE / 2 - w / 2) + 'px';
+    el.style.top     = (dieY + DIE_SIZE + 2) + 'px';
+  }
 
-    shadow1.style.transition = 'all 0.35s ease';
-    shadow2.style.transition = 'all 0.35s ease';
-    shadow1.style.transform  = 'scaleX(1)';
-    shadow2.style.transform  = 'scaleX(1)';
-    shadow1.style.opacity    = '0.4';
-    shadow2.style.opacity    = '0.4';
-
-    // Update result display
-    document.getElementById('roller-name').textContent = pendingResult.player_name + ' rolled';
-    document.getElementById('roll-total').textContent  = pendingResult.total;
-    lastRollId = pendingResult.id;
+  // ── Roll ──────────────────────────────────────────────────────────────────
+  async function rollDice() {
+    if (animating) return;
+    animating     = true;
     pendingResult = null;
+    document.getElementById('roll-btn').disabled = true;
+    document.getElementById('roller-name').textContent = '';
+    document.getElementById('roll-total').textContent  = '';
 
-    setTimeout(() => {
-      animating = false;
-      document.getElementById('roll-btn').disabled = false;
-      fetchLatest();
-    }, 400);
+    const tw = getTableWidth();
+
+    // Fetch result in parallel with animation
+    fetch('/api/dice/roll', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({player_name: playerName})
+    }).then(r => r.json()).then(d => { pendingResult = d; });
+
+    let settled = 0;
+    function checkDone() {
+      settled++;
+      if (settled === 2) {
+        animating = false;
+        document.getElementById('roll-btn').disabled = false;
+        if (pendingResult) {
+          document.getElementById('roller-name').textContent = pendingResult.player_name + ' rolled';
+          document.getElementById('roll-total').textContent  = pendingResult.total;
+          lastRollId = pendingResult.id;
+        }
+        fetchLatest();
+      }
+    }
+
+    // Die 1 — thrown from upper-left area
+    launchDie(
+      'die1', 'shadow1',
+      Math.floor(tw * 0.15),                // startX
+      Math.floor(tw * 0.15 + Math.random() * 60),  // landX
+      0,                                    // delay: first
+      () => pendingResult ? pendingResult.die1 : null,
+      checkDone
+    );
+
+    // Die 2 — thrown slightly later from upper-right area
+    launchDie(
+      'die2', 'shadow2',
+      Math.floor(tw * 0.65),
+      Math.floor(tw * 0.5 + Math.random() * 60),
+      110 + Math.floor(Math.random() * 60), // delay: 110–170ms later
+      () => pendingResult ? pendingResult.die2 : null,
+      checkDone
+    );
   }
 
   // ── Polling & history ─────────────────────────────────────────────────────
-  function setDie(id, val) {
-    document.getElementById(id).dataset.val = val;
-  }
-
   function applyRoll(data) {
-    if (animating) return; // don't overwrite mid-animation
-    setDie('die1', data.die1);
-    setDie('die2', data.die2);
+    if (animating) return;
+    const d1 = document.getElementById('die1');
+    const d2 = document.getElementById('die2');
+    d1.dataset.val = data.die1;
+    d2.dataset.val = data.die2;
     document.getElementById('roller-name').textContent = data.player_name + ' rolled';
     document.getElementById('roll-total').textContent  = data.die1 + data.die2;
     lastRollId = data.id;
   }
 
   function renderHistory(history) {
-    const list = document.getElementById('history-list');
-    list.innerHTML = history.map(r => {
+    document.getElementById('history-list').innerHTML = history.map(r => {
       const mine = r.player_name === playerName ? 'mine' : '';
       const time = new Date(r.rolled_at + 'Z').toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
       return `<div class="history-item ${mine}">
@@ -380,14 +437,8 @@
   async function fetchLatest() {
     const res  = await fetch(`/api/dice/latest?since_id=${lastRollId}`);
     const data = await res.json();
-
-    if (data.new_roll && data.latest) {
-      applyRoll(data.latest);
-      lastRollId = data.latest.id;
-    } else if (data.latest && lastRollId === 0) {
-      applyRoll(data.latest);
-      lastRollId = data.latest.id;
-    }
+    if (data.new_roll && data.latest) applyRoll(data.latest);
+    else if (data.latest && lastRollId === 0) applyRoll(data.latest);
     if (data.history) renderHistory(data.history);
   }
 
